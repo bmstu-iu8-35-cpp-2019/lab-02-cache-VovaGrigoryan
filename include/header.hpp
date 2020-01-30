@@ -6,6 +6,7 @@
 #include <iostream>
 #include <chrono>
 #include <vector>
+#include <random>
 
 #undef RAND_MAX
 #define RAND_MAX 4 * 1024 * 1024
@@ -45,7 +46,8 @@ Report RunTest(int size)
             t = arr[t];
     }
     auto timer_of = std::chrono::high_resolution_clock::now();
-    report.directTime = std::chrono::duration_cast<std::chrono::milliseconds>(timer_of - timer_on).count();
+    report.directTime = std::chrono::duration_cast<std::chrono::milliseconds>
+            (timer_of - timer_on).count();
 
     for (int i = count - 1; i >= 0; --i)
         arr[i] = i - 1;
@@ -63,10 +65,15 @@ Report RunTest(int size)
             t = arr[t];
     }
     timer_of = std::chrono::high_resolution_clock::now();
-    report.reversTime = std::chrono::duration_cast<std::chrono::milliseconds>(timer_of - timer_on).count();
+    report.reversTime = std::chrono::duration_cast<std::chrono::milliseconds>
+            (timer_of - timer_on).count();
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_int_distribution<> dis(0, RAND_MAX);
 
     for (int i = 0; i < count; ++i)
-        arr[i] = rand() % count;
+        arr[i] = dis(gen) % count;
 
     // прогревание кеша
     for (int i = 0; i < count; ++i)
@@ -80,7 +87,8 @@ Report RunTest(int size)
             t = arr[t];
     }
     timer_of = std::chrono::high_resolution_clock::now();
-    report.randomTime = std::chrono::duration_cast<std::chrono::milliseconds>(timer_of - timer_on).count();
+    report.randomTime = std::chrono::duration_cast<std::chrono::milliseconds>
+            (timer_of - timer_on).count();
 
     delete[]arr;
     return report;
